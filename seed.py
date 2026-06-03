@@ -10,6 +10,7 @@ APP_DIR = os.path.join(ROOT_DIR, "app")
 if APP_DIR not in sys.path:
     sys.path.insert(0, APP_DIR)
 
+from app.core.security import get_password_hash
 from app.db.base import Base
 from app.db.session import SessionLocal, engine
 from app.models.user import User
@@ -36,9 +37,24 @@ def clear_seed_data(session) -> None:
 
 def seed_sample_data(session) -> None:
     """Insert sample users, consultations, transactions, reviews, and chat messages."""
-    alice = User(name="Alice Client", email="alice@example.com", role="client")
-    bob = User(name="Bob Consultant", email="bob@example.com", role="consultant")
-    admin = User(name="Admin User", email="admin@example.com", role="admin")
+    alice = User(
+        name="Alice Client",
+        email="alice@example.com",
+        hashed_password=get_password_hash("alicepassword"),
+        role="client"
+    )
+    bob = User(
+        name="Bob Consultant",
+        email="bob@example.com",
+        hashed_password=get_password_hash("bobpassword"),
+        role="consultant"
+    )
+    admin = User(
+        name="Admin User",
+        email="admin@example.com",
+        hashed_password=get_password_hash("adminpassword"),
+        role="admin"
+    )
 
     session.add_all([alice, bob, admin])
     session.flush()

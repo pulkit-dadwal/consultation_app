@@ -4,7 +4,7 @@ from sqlalchemy import Column, DateTime, Text, Enum, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from db.base import Base
+from app.db.base import Base
 
 
 class Consultation(Base):
@@ -41,12 +41,14 @@ class Consultation(Base):
 
     client = relationship(
         "User",
-        foreign_keys=[client_id]
+        foreign_keys=[client_id],
+        back_populates="client_consultations"
     )
 
     consultant = relationship(
         "User",
-        foreign_keys=[consultant_id]
+        foreign_keys=[consultant_id],
+        back_populates="consultant_consultations"
     )
 
     transaction = relationship(

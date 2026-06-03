@@ -3,9 +3,9 @@ import uuid
 from sqlalchemy import Column, String, Enum, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 
-from db.base import Base
+from app.db.base import Base
 
 
 class User(Base):
@@ -17,21 +17,25 @@ class User(Base):
 
     email = Column(String, unique=True, nullable=False)
 
+    hashed_password = Column(String, nullable=False)
+
     role = Column(
         Enum("client", "consultant", "admin", name="user_roles"),
         nullable=False
     )
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
     client_consultations = relationship(
         "Consultation",
-        foreign_keys="Consultation.client_id"
+        foreign_keys="Consultation.client_id",
+        back_populates="client"
     )
 
     consultant_consultations = relationship(
         "Consultation",
-        foreign_keys="Consultation.consultant_id"
+        foreign_keys="Consultation.consultant_id",
+        back_populates="consultant"
     )
 
     chat_messages = relationship(

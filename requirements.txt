@@ -1,0 +1,26 @@
+# Web Framework
+fastapi==0.136.3
+uvicorn==0.48.0
+uvloop==0.22.1
+starlette==1.2.0
+
+# Database
+sqlalchemy==2.0.50
+alembic==1.18.4
+psycopg2-binary==2.9.12
+
+# Data Validation & Settings
+pydantic==2.13.4
+pydantic-settings==2.14.1
+email-validator==2.3.0
+
+# Authentication & Security
+python-jose==3.5.0
+passlib==1.7.4
+bcrypt==4.0.1
+cryptography==48.0.0
+
+# Utilities
+python-dotenv==1.2.2
+python-multipart==0.0.30
+watchfiles==1.2.0

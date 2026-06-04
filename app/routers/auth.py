@@ -12,10 +12,10 @@ router = APIRouter(
     tags=['auth']
 )
 
-@router.post('/', status_code=status.HTTP_201_CREATED)
-async def create_user_endpoint(db: db_dependency, create_user_request: CreateUserRequest):
+@router.post('/register', status_code=status.HTTP_201_CREATED)
+async def register_endpoint(db: db_dependency, create_user_request: CreateUserRequest):
     return await create_user(db, create_user_request)
 
-@router.post('/token', response_model=Token)
-async def login_for_access_token_endpoint(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
+@router.post('/login', response_model=Token)
+async def login_endpoint(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
     return await login_for_access_token(form_data, db)

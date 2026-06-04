@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any, Optional
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -15,7 +16,7 @@ from app.models.user import User
 
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl="/auth/token")
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 class Token(BaseModel):
     access_token: str
@@ -50,8 +51,8 @@ def authenticate_user(email: str, password: str, db):
     return user
 
 
-def create_access_token(email: str, user_id: str, role: str, expires_delta: timedelta):
-    encode = {'sub': email, 'id': user_id, 'role': role}
+def create_access_token(email: str, user_id: UUID, role: str, expires_delta: timedelta):
+    encode = {'sub': email, 'id': str(user_id), 'role': role}
     expires = datetime.now(timezone.utc) + expires_delta
     encode.update({'exp': expires})
     return jwt.encode(encode, settings.secret_key, algorithm=settings.algorithm)
@@ -61,12 +62,20 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         email: str = payload.get('sub')
-        user_id: str = payload.get('id')
+        user_id = payload.get('id')
         user_role: str = payload.get('role')
         if email is None or user_id is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail='Could not validate user.')
+        try:
+            user_id = UUID(user_id)
+        except ValueError:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail='Could not validate user.')
         return {'email': email, 'id': user_id, 'user_role': user_role}
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Could not validate user.')
+
+
+user_dependency = Annotated[dict, Depends(get_current_user)]

@@ -42,3 +42,9 @@ class User(Base):
         "ChatMessage",
         back_populates="user"
     )
+
+    consultant_profile = relationship(
+        "Consultant",
+        back_populates="user",
+        uselist=False
+    )

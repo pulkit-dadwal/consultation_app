@@ -3,7 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status
 from app.core.security import db_dependency, user_dependency
 from app.services.consultant_service import get_consultant_profile, update_consultant_profile, get_all_consultants, get_top_rated_consultants
+from app.services.review_service import get_reviews_for_consultant
 from app.schemas.consultant import ConsultantUpdate, ConsultantResponse
+from app.schemas.review import ReviewResponse
 
 router = APIRouter(
     prefix='/consultants',
@@ -41,3 +43,9 @@ async def get_my_consultant_profile(db: db_dependency, user: user_dependency):
 async def update_my_consultant_profile(db: db_dependency, consultant_data: ConsultantUpdate, user: user_dependency):
     """Update current consultant's own profile"""
     return await update_consultant_profile(db, user, consultant_data)
+
+
+@router.get('/{consultant_id}/reviews', response_model=list[ReviewResponse])
+async def get_consultant_reviews(consultant_id: str, db: db_dependency):
+    """Get a consultant's public reviews."""
+    return await get_reviews_for_consultant(db, consultant_id)

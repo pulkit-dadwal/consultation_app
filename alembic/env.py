@@ -15,6 +15,7 @@ import app.models.consultation as consultation
 import app.models.review as review
 import app.models.chat_message as chat_message
 import app.models.consultant as consultant
+import app.models.wallet as wallet
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

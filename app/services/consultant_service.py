@@ -6,22 +6,25 @@ from app.core.security import db_dependency, user_dependency
 
 
 async def get_all_consultants(db: db_dependency, user: user_dependency):
-    """Get all consultants"""
+    """Get all online consultants"""
     if(user.get('user_role') == 'consultant'):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only clients can view all consultants.")
-    consultants = db.query(Consultant).all()
+    consultants = db.query(Consultant).filter(Consultant.status == 'online').all()
     return consultants
 
 
 async def get_top_rated_consultants(db: db_dependency, user: user_dependency):
-    """Get top-rated consultants"""
+    """Get top-rated online consultants"""
     if(user.get('user_role') == 'consultant'):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only clients can view top-rated consultants.")
-    consultants = db.query(Consultant).filter(Consultant.rating >= 4.0).all()
+    consultants = db.query(Consultant).filter(
+        Consultant.status == 'online',
+        Consultant.rating >= 4.0
+    ).all()
     return consultants
 
 
-async def get_consultant_profile_by_id(db: db_dependency, user: user_dependency, consultant_id):
+async def get_consultant_profile_by_id(db: db_dependency, user: user_dependency, consultant_id: str):
     """Get a consultant profile by ID"""
     if(user.get('user_role') == 'consultant'):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only clients can view consultant profiles.")

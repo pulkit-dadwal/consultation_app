@@ -48,3 +48,9 @@ class User(Base):
         back_populates="user",
         uselist=False
     )
+
+    wallet = relationship(
+        "Wallet",
+        back_populates="user",
+        uselist=False
+    )

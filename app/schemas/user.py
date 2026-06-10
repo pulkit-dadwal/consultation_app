@@ -14,5 +14,4 @@ class UserRole(str, Enum):
 class CreateUserRequest(BaseModel):
     name: str = Field(..., max_length=120)
     email: EmailStr
-    role: UserRole
     password: str = Field(..., min_length=8)

@@ -1,14 +1,6 @@
 import uuid
 
-from sqlalchemy import (
-    Column,
-    String,
-    Text,
-    DateTime,
-    Enum,
-    ForeignKey
-)
-
+from sqlalchemy import Column, String, Numeric, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
@@ -16,29 +8,27 @@ from datetime import datetime, timezone
 from app.db.base import Base
 
 
-class ChatMessage(Base):
-    __tablename__ = "chat_messages"
+class Wallet(Base):
+    __tablename__ = "wallets"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     user_id = Column(
         UUID(as_uuid=True),
         ForeignKey("users.id"),
-        nullable=False
+        nullable=False,
+        unique=True
     )
 
-    role = Column(
-        Enum("user", "assistant", name="message_role"),
-        nullable=False
-    )
+    balance = Column(Numeric(10, 2), nullable=False, default=0)
 
-    content = Column(Text, nullable=False)
-
-    intent = Column(String(80))
+    currency = Column(String(3), default="USD", nullable=False)
 
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
+    updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+
     user = relationship(
         "User",
-        back_populates="chat_messages"
+        back_populates="wallet"
     )

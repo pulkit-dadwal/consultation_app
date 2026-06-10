@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, String, Float, ForeignKey, DateTime, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
@@ -23,6 +23,12 @@ class Consultant(Base):
 	specialization = Column(String(255), nullable=True)
 
 	consultation_fee = Column(Float, nullable=True)
+
+	status = Column(
+		Enum("online", "offline", name="consultant_status"),
+		nullable=False,
+		default="online"
+	)
 
 	rating = Column(Float, default=4.0)
 

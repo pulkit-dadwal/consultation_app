@@ -54,3 +54,9 @@ class User(Base):
         back_populates="user",
         uselist=False
     )
+
+    wallet_transactions = relationship(
+    "WalletTransaction",
+    back_populates="user",
+    cascade="all, delete-orphan"
+)

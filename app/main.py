@@ -15,6 +15,7 @@ from app.routers import chat
 from app.routers import admin
 from app.routers import users
 from app.routers import wallet_transactions
+from app.routers.websocket import router as websocket_router
 from app.db.session import engine
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,3 +49,4 @@ app.include_router(chat.router)
 app.include_router(admin.router)
 app.include_router(users.router)
 app.include_router(wallet_transactions.router)
+app.include_router(websocket_router)

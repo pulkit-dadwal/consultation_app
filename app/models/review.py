@@ -10,7 +10,7 @@ from sqlalchemy import (
 
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.base import Base
 
@@ -31,7 +31,7 @@ class Review(Base):
 
     comment = Column(Text)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
 
     consultation = relationship(
         "Consultation",

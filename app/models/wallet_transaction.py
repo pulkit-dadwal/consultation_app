@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 
 from sqlalchemy import (
     Column,
-    String,
     Numeric,
     DateTime,
     ForeignKey,
@@ -34,6 +33,13 @@ class WalletTransaction(Base):
         index=True
     )
 
+    consultation_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("consultations.id"),
+        nullable=True,
+        index=True
+    )
+
     amount = Column(
         Numeric(10, 2),
         nullable=False
@@ -42,10 +48,9 @@ class WalletTransaction(Base):
     transaction_type = Column(
         Enum(
             "deposit",
-            "consultation_charge",
-            "consultation_refund",
-            "consultant_payout",
-            "adjustment",
+            "paid",
+            "refund",
+            "received",
             name="wallet_transaction_type"
         ),
         nullable=False
@@ -63,5 +68,10 @@ class WalletTransaction(Base):
 
     user = relationship(
         "User",
+        back_populates="wallet_transactions"
+    )
+
+    consultation = relationship(
+        "Consultation",
         back_populates="wallet_transactions"
     )

@@ -1,3 +1,4 @@
+from decimal import Decimal
 import uuid
 from datetime import datetime
 from enum import Enum
@@ -15,3 +16,14 @@ class CreateUserRequest(BaseModel):
     name: str = Field(..., max_length=120)
     email: EmailStr
     password: str = Field(..., min_length=8)
+
+    
+class UserResponse(BaseModel):
+    id: uuid.UUID
+    name: str
+    email: EmailStr
+    role: str
+    wallet_balance: Decimal
+
+    class Config:
+        from_attributes = True

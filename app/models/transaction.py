@@ -28,7 +28,7 @@ class Transaction(Base):
 
     amount = Column(Numeric(10, 2), nullable=False)
 
-    currency = Column(String(3), default="USD")
+    currency = Column(String(3), default="INR")
 
     status = Column(
         Enum(
@@ -37,6 +37,7 @@ class Transaction(Base):
             "refunded",
             name="payment_status"
         ),
+        default="pending",
         nullable=False
     )
 

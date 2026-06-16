@@ -1,5 +1,12 @@
-from pydantic import BaseModel, EmailStr
+from enum import Enum
+from pydantic import BaseModel
 
 
-class PromoteUserRequest(BaseModel):
-    email: EmailStr
+class ConsultantRequestDecision(str, Enum):
+    approved = "approved"
+    rejected = "rejected"
+
+
+class ConsultantRequestReview(BaseModel):
+    status: ConsultantRequestDecision
+    rejection_reason: str | None = None

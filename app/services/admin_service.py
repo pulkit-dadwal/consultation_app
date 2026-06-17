@@ -40,9 +40,7 @@ async def review_consultant_request(
 
     consultant_request = (
         db.query(ConsultantRequest)
-        .filter(
-            ConsultantRequest.id == request_id
-        )
+        .filter(ConsultantRequest.id == request_id)
         .first()
     )
 
@@ -60,9 +58,7 @@ async def review_consultant_request(
 
     applicant = (
         db.query(User)
-        .filter(
-            User.id == consultant_request.user_id
-        )
+        .filter(User.id == consultant_request.user_id)
         .first()
     )
 
@@ -72,36 +68,39 @@ async def review_consultant_request(
             detail="User not found."
         )
 
-    consultant_request.reviewed_at = datetime.now(
-        timezone.utc
-    )
+    consultant_request.reviewed_at = datetime.now(timezone.utc)
 
     if review_data.status == "approved":
 
         consultant_request.status = "approved"
-
         applicant.role = "consultant"
 
-        consultant_profile = Consultant(
-            user_id=applicant.id,
-            specialization=None,
-            consultation_fee_per_minute=None,
-            status="offline"
+        # Guard against double-approval creating a duplicate profile.
+        existing_profile = (
+            db.query(Consultant)
+            .filter(Consultant.user_id == applicant.id)
+            .first()
         )
 
-        db.add(consultant_profile)
+        if not existing_profile:
+            # consultation_fee_per_minute starts at 0 — the consultant must
+            # update their profile before going online. This avoids a NOT NULL
+            # violation while still flagging unconfigured consultants via the
+            # fee check in create_consultation.
+            consultant_profile = Consultant(
+                user_id=applicant.id,
+                specialization=None,
+                consultation_fee_per_minute=0,
+                status="offline"
+            )
+            db.add(consultant_profile)
 
     else:
 
         consultant_request.status = "rejected"
-
-        consultant_request.rejection_reason = (
-            review_data.rejection_reason
-        )
-
+        consultant_request.rejection_reason = review_data.rejection_reason
         consultant_request.cooldown_until = (
-            datetime.now(timezone.utc)
-            + timedelta(days=30)
+            datetime.now(timezone.utc) + timedelta(days=30)
         )
 
     db.commit()

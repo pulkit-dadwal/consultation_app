@@ -44,14 +44,14 @@ class ConsultationMessage(Base):
     )
 
     message_type = Column(
-    Enum(
-        "chat",
-        "extension_request",
-        "system",
-        name="consultation_message_type"
-    ),
-    nullable=False,
-    default="chat"
+        Enum(
+            "chat",               # Regular chat message
+            "extension_request",  # Client requesting to extend the session
+            "system",             # System-generated (e.g. "Session ends in 3 minutes")
+            name="consultation_message_type"
+        ),
+        nullable=False,
+        default="chat"
     )
 
     sent_at = Column(
@@ -60,11 +60,16 @@ class ConsultationMessage(Base):
         nullable=False
     )
 
+    # --- Relationships ---
+
     consultation = relationship(
         "Consultation",
         back_populates="messages"
     )
 
+    # back_populates added to match User.consultation_messages
     sender = relationship(
-        "User"
+        "User",
+        foreign_keys=[sender_id],
+        back_populates="consultation_messages"
     )

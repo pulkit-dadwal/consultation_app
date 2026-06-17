@@ -18,8 +18,13 @@ from app.db.base import Base
 class Transaction(Base):
     __tablename__ = "transactions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4
+    )
 
+    # One transaction record per consultation
     consultation_id = Column(
         UUID(as_uuid=True),
         ForeignKey("consultations.id"),
@@ -32,9 +37,9 @@ class Transaction(Base):
 
     status = Column(
         Enum(
-            "pending",
-            "paid",
-            "refunded",
+            "pending",   # Wallet balance checked but not yet deducted
+            "paid",      # Fee deducted after consultant acceptance
+            "refunded",  # Refunded if session expired or was rejected
             name="payment_status"
         ),
         default="pending",
@@ -42,6 +47,8 @@ class Transaction(Base):
     )
 
     paid_at = Column(DateTime)
+
+    # --- Relationships ---
 
     consultation = relationship(
         "Consultation",

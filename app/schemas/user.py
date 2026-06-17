@@ -1,7 +1,7 @@
 from decimal import Decimal
+from enum import Enum
 import uuid
 from datetime import datetime
-from enum import Enum
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -17,12 +17,13 @@ class CreateUserRequest(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8)
 
-    
+
 class UserResponse(BaseModel):
     id: uuid.UUID
     name: str
     email: EmailStr
-    role: str
+    # UserRole was already defined above but wasn't being used here — now wired in
+    role: UserRole
     wallet_balance: Decimal
 
     class Config:

@@ -6,10 +6,8 @@ from app.models.user import User
 from app.models.consultant import Consultant
 from app.models.consultant_request import ConsultantRequest
 
-from app.schemas.consultant_request import (
-    ConsultantRequestCreate,
-    ConsultantRequestReview
-)
+from app.schemas.consultant_request import ConsultantRequestCreate
+from app.schemas.admin import ConsultantRequestReview
 
 from app.core.security import (
     db_dependency,

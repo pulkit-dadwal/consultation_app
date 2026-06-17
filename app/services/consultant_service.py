@@ -1,4 +1,7 @@
+from uuid import UUID
+
 from fastapi import HTTPException, status
+
 from app.models.consultant import Consultant
 from app.models.user import User
 from app.schemas.consultant import ConsultantUpdate
@@ -9,7 +12,7 @@ async def get_all_consultants(
     db: db_dependency,
     user: user_dependency
 ):
-    """Get all online consultants"""
+    """Get all online consultants."""
 
     if user.get("user_role") == "consultant":
         raise HTTPException(
@@ -19,9 +22,7 @@ async def get_all_consultants(
 
     consultants = (
         db.query(Consultant)
-        .filter(
-            Consultant.status == "online"
-        )
+        .filter(Consultant.status == "online")
         .all()
     )
 
@@ -32,7 +33,7 @@ async def get_top_rated_consultants(
     db: db_dependency,
     user: user_dependency
 ):
-    """Get top-rated online consultants"""
+    """Get top-rated online consultants."""
 
     if user.get("user_role") == "consultant":
         raise HTTPException(
@@ -55,15 +56,13 @@ async def get_top_rated_consultants(
 async def get_consultant_profile_by_id(
     db: db_dependency,
     user: user_dependency,
-    consultant_id: int
+    consultant_id: UUID  # FIX: was int — model uses UUID primary key
 ):
-    """Get consultant profile by id"""
+    """Get consultant profile by id."""
 
     consultant = (
         db.query(Consultant)
-        .filter(
-            Consultant.id == consultant_id
-        )
+        .filter(Consultant.id == consultant_id)
         .first()
     )
 
@@ -80,7 +79,7 @@ async def get_consultant_profile(
     db: db_dependency,
     user: user_dependency
 ):
-    """Get authenticated consultant profile"""
+    """Get authenticated consultant's own profile."""
 
     user_id = user.get("id")
 
@@ -104,9 +103,7 @@ async def get_consultant_profile(
 
     consultant = (
         db.query(Consultant)
-        .filter(
-            Consultant.user_id == user_id
-        )
+        .filter(Consultant.user_id == user_id)
         .first()
     )
 
@@ -124,7 +121,7 @@ async def update_consultant_profile(
     user: user_dependency,
     consultant_data: ConsultantUpdate
 ):
-    """Update consultant profile"""
+    """Update consultant profile."""
 
     user_id = user.get("id")
 
@@ -148,9 +145,7 @@ async def update_consultant_profile(
 
     consultant = (
         db.query(Consultant)
-        .filter(
-            Consultant.user_id == user_id
-        )
+        .filter(Consultant.user_id == user_id)
         .first()
     )
 
@@ -160,21 +155,13 @@ async def update_consultant_profile(
             detail="Consultant profile not found."
         )
 
-    update_data = consultant_data.model_dump(
-        exclude_unset=True
-    )
+    update_data = consultant_data.model_dump(exclude_unset=True)
 
     for key, value in update_data.items():
-        setattr(
-            consultant,
-            key,
-            value
-        )
+        setattr(consultant, key, value)
 
     db.add(consultant)
-
     db.commit()
-
     db.refresh(consultant)
 
     return consultant
@@ -185,12 +172,16 @@ async def update_consultant_status(
     user: user_dependency,
     consultant_status: str
 ):
-    """Toggle consultant online/offline status"""
+    """Toggle consultant online/offline status."""
 
-    if consultant_status not in [
-        "online",
-        "offline"
-    ]:
+    # FIX: role check was missing — any authenticated user could call this
+    if user.get("user_role") != "consultant":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only consultants can update their status."
+        )
+
+    if consultant_status not in ["online", "offline"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid consultant status."
@@ -198,9 +189,7 @@ async def update_consultant_status(
 
     consultant = (
         db.query(Consultant)
-        .filter(
-            Consultant.user_id == user.get("id")
-        )
+        .filter(Consultant.user_id == user.get("id"))
         .first()
     )
 
@@ -213,7 +202,6 @@ async def update_consultant_status(
     consultant.status = consultant_status
 
     db.commit()
-
     db.refresh(consultant)
 
     return consultant

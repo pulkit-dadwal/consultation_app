@@ -58,6 +58,26 @@ def create_access_token(email: str, user_id: UUID, role: str, expires_delta: tim
     return jwt.encode(encode, settings.secret_key, algorithm=settings.algorithm)
 
 
+def decode_access_token(token: str) -> dict:
+    try:
+        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+        email: str = payload.get('sub')
+        user_id = payload.get('id')
+        user_role: str = payload.get('role')
+        if email is None or user_id is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail='Could not validate user.')
+        try:
+            user_id = UUID(user_id)
+        except ValueError:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail='Could not validate user.')
+        return {'email': email, 'id': user_id, 'user_role': user_role}
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail='Could not validate user.')
+
+
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])

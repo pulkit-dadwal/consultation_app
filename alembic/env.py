@@ -9,13 +9,15 @@ from alembic import context
 from dotenv import load_dotenv
 
 from app.db.base import Base
-import app.models.user as user
-import app.models.transaction as transaction
-import app.models.consultation as consultation
-import app.models.review as review
-import app.models.chat_message as chat_message
-import app.models.consultant as consultant
-import app.models.wallet as wallet
+import app.models.user
+import app.models.consultant
+import app.models.consultant_request
+import app.models.consultation
+import app.models.consultation_message
+import app.models.transaction
+import app.models.wallet_transaction
+import app.models.review
+import app.models.chat_message
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

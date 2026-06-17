@@ -4,6 +4,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.schemas.admin import ConsultantRequestDecision
+
 
 class ConsultantRequestCreate(BaseModel):
     linkedin_url: Optional[str] = Field(None, max_length=500)
@@ -12,16 +14,12 @@ class ConsultantRequestCreate(BaseModel):
     notes: Optional[str] = None
 
 
-class ConsultantRequestReview(BaseModel):
-    status: str
-    rejection_reason: Optional[str] = None
-
-
 class ConsultantRequestResponse(BaseModel):
     id: UUID
     user_id: UUID
 
-    status: str
+    # Uses the proper enum instead of plain str
+    status: ConsultantRequestDecision
 
     linkedin_url: Optional[str]
     resume_url: Optional[str]

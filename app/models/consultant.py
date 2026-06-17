@@ -9,45 +9,69 @@ from app.db.base import Base
 
 
 class Consultant(Base):
-	__tablename__ = "consultants"
+    __tablename__ = "consultants"
 
-	id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4
+    )
 
-	user_id = Column(
-		UUID(as_uuid=True),
-		ForeignKey("users.id"),
-		nullable=False,
-		unique=True
-	)
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=False,
+        unique=True
+    )
 
-	specialization = Column(String(255), nullable=True)
+    specialization = Column(
+        String(255),
+        nullable=True
+    )
 
-	consultation_fee_per_minute = Column(Numeric(10, 2), nullable=False)
+    consultation_fee_per_minute = Column(
+        Numeric(10, 2),
+        nullable=False
+    )
 
-	status = Column(
-    Enum(
-        "online",
-        "offline",
-        name="consultant_status"
-    ),
-    nullable=False,
-    default="offline",
-    index=True
-	)
+    status = Column(
+        Enum(
+            "online",
+            "offline",
+            name="consultant_status"
+        ),
+        nullable=False,
+        default="offline",
+        index=True
+    )
 
-	rating = Column(Float, default=4.0)
+    rating = Column(
+        Float,
+        default=4.0
+    )
 
-	created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    # FIX: was default=datetime.now(timezone.utc) — evaluated once at import
+    # time, so all rows would share the same timestamp. lambda: ensures each
+    # row gets the current time at INSERT.
+    created_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc)
+    )
 
-	updated_at = Column(DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    updated_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc)
+    )
 
-	user = relationship(
-		"User",
-		back_populates="consultant_profile"
-	)
+    # --- Relationships ---
 
+    user = relationship(
+        "User",
+        back_populates="consultant_profile"
+    )
 
-	consultations = relationship(
-    "Consultation",
-    back_populates="consultant"
-	)
+    consultations = relationship(
+        "Consultation",
+        back_populates="consultant"
+    )

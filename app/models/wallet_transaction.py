@@ -33,6 +33,8 @@ class WalletTransaction(Base):
         index=True
     )
 
+    # Nullable — not all wallet movements are tied to a consultation (e.g.
+    # a top-up deposit has no consultation_id)
     consultation_id = Column(
         UUID(as_uuid=True),
         ForeignKey("consultations.id"),
@@ -47,24 +49,24 @@ class WalletTransaction(Base):
 
     transaction_type = Column(
         Enum(
-            "deposit",
-            "paid",
-            "refund",
-            "received",
+            "deposit",   # Client adds funds to wallet
+            "paid",      # Fee deducted from client wallet on session acceptance
+            "refund",    # Funds returned to client (rejected / expired session)
+            "received",  # Earnings credited to consultant wallet
             name="wallet_transaction_type"
         ),
         nullable=False
     )
 
-    description = Column(
-        Text
-    )
+    description = Column(Text)
 
     created_at = Column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),
         nullable=False
     )
+
+    # --- Relationships ---
 
     user = relationship(
         "User",

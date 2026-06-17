@@ -43,25 +43,15 @@ class ConsultantRequest(Base):
         default="pending"
     )
 
-    linkedin_url = Column(
-        String(500)
-    )
+    linkedin_url = Column(String(500))
 
-    resume_url = Column(
-        String(500)
-    )
+    resume_url = Column(String(500))
 
-    portfolio_url = Column(
-        String(500)
-    )
+    portfolio_url = Column(String(500))
 
-    notes = Column(
-        Text
-    )
+    notes = Column(Text)
 
-    rejection_reason = Column(
-        Text
-    )
+    rejection_reason = Column(Text)
 
     applied_at = Column(
         DateTime,
@@ -69,13 +59,12 @@ class ConsultantRequest(Base):
         nullable=False
     )
 
-    reviewed_at = Column(
-        DateTime
-    )
+    reviewed_at = Column(DateTime)
 
-    cooldown_until = Column(
-        DateTime
-    )
+    # Set on rejection. Client cannot reapply until this datetime has passed.
+    cooldown_until = Column(DateTime)
+
+    # --- Relationships ---
 
     user = relationship(
         "User",

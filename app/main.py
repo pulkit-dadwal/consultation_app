@@ -1,25 +1,33 @@
-import app.models.user as user
-import app.models.transaction as transaction
-import app.models.consultation as consultation
-import app.models.review as review
-import app.models.chat_message as chat_message
-import app.models.consultant as consultant
-import app.models.wallet_transaction as wallet_transaction
-from app.routers import auth
-from app.routers import analytics
-from app.routers import consultations
-from app.routers import consultants
-from app.routers import reviews
-from app.routers import transactions
-from app.routers import chat
-from app.routers import admin
-from app.routers import users
-from app.routers import wallet_transactions
-from app.routers.websocket import router as websocket_router
-from app.db.session import engine
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.db.base import Base
+from app.db.session import engine
+
+# Import all models so Base.metadata is fully populated before create_all.
+# Every model must be imported here even if not used directly — otherwise
+# its table won't be created.
+import app.models.user
+import app.models.consultant
+import app.models.consultant_request
+import app.models.consultation
+import app.models.consultation_message
+import app.models.transaction
+import app.models.wallet_transaction
+import app.models.review
+import app.models.chat_message
+
+from app.routers import (
+    auth,
+    admin,
+    users,
+    consultants,
+    consultations,
+    reviews,
+    transactions,
+    wallet_transactions,
+)
+from app.routers.websocket import router as websocket_router
 
 app = FastAPI()
 
@@ -31,22 +39,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-user.Base.metadata.create_all(bind=engine)
-transaction.Base.metadata.create_all(bind=engine)
-consultation.Base.metadata.create_all(bind=engine)
-review.Base.metadata.create_all(bind=engine)
-chat_message.Base.metadata.create_all(bind=engine)
-consultant.Base.metadata.create_all(bind=engine)
-wallet_transaction.Base.metadata.create_all(bind=engine)
+# Single create_all is enough — all models share the same Base so one call
+# creates every table. Calling it once per model was redundant.
+Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
-app.include_router(analytics.router)
-app.include_router(consultations.router)
-app.include_router(consultants.router)
-app.include_router(reviews.router)
-app.include_router(transactions.router)
-app.include_router(chat.router)
 app.include_router(admin.router)
 app.include_router(users.router)
+app.include_router(consultants.router)
+app.include_router(consultations.router)
+app.include_router(reviews.router)
+app.include_router(transactions.router)
 app.include_router(wallet_transactions.router)
 app.include_router(websocket_router)

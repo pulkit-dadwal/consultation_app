@@ -22,6 +22,7 @@ from app.routers import (
     admin,
     users,
     consultants,
+    consultant_requests,
     consultations,
     reviews,
     transactions,
@@ -47,6 +48,7 @@ app.include_router(auth.router)
 app.include_router(admin.router)
 app.include_router(users.router)
 app.include_router(consultants.router)
+app.include_router(consultant_requests.router)
 app.include_router(consultations.router)
 app.include_router(reviews.router)
 app.include_router(transactions.router)

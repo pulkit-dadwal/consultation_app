@@ -4,12 +4,34 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.core.security import db_dependency, user_dependency
 from app.models.wallet_transaction import WalletTransaction
-from app.schemas.wallet_transaction import WalletTransactionResponse
+from app.schemas.wallet_transaction import (
+    AddFundsRequest,
+    WalletTransactionResponse
+)
+from app.services.wallet_transaction_service import add_funds_to_wallet
 
 router = APIRouter(
     prefix="/wallet-transactions",
     tags=["wallet-transactions"]
 )
+
+
+@router.post(
+    "/deposit",
+    response_model=WalletTransactionResponse,
+    status_code=status.HTTP_201_CREATED
+)
+async def deposit_funds(
+    funds_data: AddFundsRequest,
+    db: db_dependency,
+    user: user_dependency
+):
+    """Add funds to the current user's wallet."""
+    return await add_funds_to_wallet(
+        db,
+        user,
+        funds_data.amount
+    )
 
 
 @router.get(

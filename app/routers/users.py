@@ -31,4 +31,5 @@ async def get_current_user_profile(
         "name": db_user.name,
         "email": db_user.email,
         "role": db_user.role,
+        "wallet_balance": db_user.wallet_balance,
     }

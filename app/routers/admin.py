@@ -7,15 +7,14 @@ from app.core.security import (
     user_dependency
 )
 
-from app.schemas.admin import ConsultantRequestReview  # FIX: was imported from consultant_request
-from app.schemas.consultant_request import ConsultantRequestResponse
-
-from app.services.consultant_request_service import (
-    get_all_consultant_requests,
-    get_consultant_request_by_id,
+from app.schemas.admin import (
+    AdminConsultantRequestResponse,
+    ConsultantRequestReview
 )
 
 from app.services.admin_service import (
+    get_all_consultant_requests,
+    get_consultant_request_for_admin,
     review_consultant_request
 )
 
@@ -27,7 +26,7 @@ router = APIRouter(
 
 @router.get(
     "/consultant-requests",
-    response_model=list[ConsultantRequestResponse]
+    response_model=list[AdminConsultantRequestResponse]
 )
 async def get_all_consultant_requests_endpoint(
     db: db_dependency,
@@ -39,7 +38,7 @@ async def get_all_consultant_requests_endpoint(
 
 @router.get(
     "/consultant-requests/{request_id}",
-    response_model=ConsultantRequestResponse
+    response_model=AdminConsultantRequestResponse
 )
 async def get_consultant_request_endpoint(
     request_id: UUID,
@@ -47,7 +46,7 @@ async def get_consultant_request_endpoint(
     user: user_dependency
 ):
     """Admin can view a specific consultant request."""
-    return await get_consultant_request_by_id(db, user, request_id)
+    return await get_consultant_request_for_admin(db, user, request_id)
 
 
 @router.patch(
@@ -61,8 +60,6 @@ async def review_consultant_request_endpoint(
     user: user_dependency
 ):
     """Approve or reject a consultant request."""
-    # FIX: arg order was (db, user, request_id, review_data) but service
-    # signature is (request_id, review_data, db, user)
     return await review_consultant_request(
         request_id,
         review_data,

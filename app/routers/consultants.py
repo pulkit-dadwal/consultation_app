@@ -37,24 +37,18 @@ router = APIRouter(
     "/",
     response_model=list[ConsultantResponse]
 )
-async def get_all_consultants_endpoint(
-    db: db_dependency,
-    user: user_dependency
-):
+async def get_all_consultants_endpoint(db: db_dependency):
     """Get all online consultants."""
-    return await get_all_consultants(db, user)
+    return await get_all_consultants(db)
 
 
 @router.get(
     "/top-rated",
     response_model=list[ConsultantResponse]
 )
-async def get_top_rated_consultants_endpoint(
-    db: db_dependency,
-    user: user_dependency
-):
+async def get_top_rated_consultants_endpoint(db: db_dependency):
     """Get top-rated online consultants."""
-    return await get_top_rated_consultants(db, user)
+    return await get_top_rated_consultants(db)
 
 
 @router.get(
@@ -100,11 +94,10 @@ async def update_consultant_status_endpoint(
 )
 async def get_consultant_profile_by_id_endpoint(
     consultant_id: UUID,
-    db: db_dependency,
-    user: user_dependency
+    db: db_dependency
 ):
     """Get consultant profile by ID."""
-    return await get_consultant_profile_by_id(db, user, consultant_id)
+    return await get_consultant_profile_by_id(db, consultant_id)
 
 
 @router.get(

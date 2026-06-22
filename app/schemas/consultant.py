@@ -21,6 +21,7 @@ class ConsultantUpdate(BaseModel):
 class ConsultantResponse(BaseModel):
     id: UUID
     user_id: UUID
+    name: Optional[str] = None
     specialization: Optional[str]
     # Decimal matches the Numeric(10, 2) column; proper enum for status
     consultation_fee_per_minute: Optional[Decimal]

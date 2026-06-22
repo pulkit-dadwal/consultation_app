@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import HTTPException, status
+from sqlalchemy.orm import joinedload
 
 from app.models.consultant import Consultant
 from app.models.user import User
@@ -13,6 +14,7 @@ async def get_all_consultants(db: db_dependency):
 
     consultants = (
         db.query(Consultant)
+        .options(joinedload(Consultant.user))
         .filter(Consultant.status == "online")
         .all()
     )
@@ -25,6 +27,7 @@ async def get_top_rated_consultants(db: db_dependency):
 
     consultants = (
         db.query(Consultant)
+        .options(joinedload(Consultant.user))
         .filter(
             Consultant.status == "online",
             Consultant.rating >= 4.0
@@ -43,6 +46,7 @@ async def get_consultant_profile_by_id(
 
     consultant = (
         db.query(Consultant)
+        .options(joinedload(Consultant.user))
         .filter(Consultant.id == consultant_id)
         .first()
     )
@@ -84,6 +88,7 @@ async def get_consultant_profile(
 
     consultant = (
         db.query(Consultant)
+        .options(joinedload(Consultant.user))
         .filter(Consultant.user_id == user_id)
         .first()
     )
@@ -126,6 +131,7 @@ async def update_consultant_profile(
 
     consultant = (
         db.query(Consultant)
+        .options(joinedload(Consultant.user))
         .filter(Consultant.user_id == user_id)
         .first()
     )

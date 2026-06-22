@@ -75,3 +75,7 @@ class Consultant(Base):
         "Consultation",
         back_populates="consultant"
     )
+
+    @property
+    def name(self):
+        return self.user.name if self.user else None

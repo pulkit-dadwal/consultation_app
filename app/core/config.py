@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     # Updated to validation_alias for modern Pydantic v2 settings management
     database_url: str = Field(..., validation_alias="DATABASE_URL")
     secret_key: str = Field(..., validation_alias="SECRET_KEY")
+    frontend_url: str = Field(..., validation_alias="FRONTEND_URL")
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 

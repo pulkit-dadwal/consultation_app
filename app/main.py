@@ -25,6 +25,7 @@ from app.routers import (
     consultants,
     consultant_requests,
     consultations,
+    chat,
     reviews,
     transactions,
     wallet_transactions,
@@ -52,6 +53,7 @@ app.include_router(users.router)
 app.include_router(consultants.router)
 app.include_router(consultant_requests.router)
 app.include_router(consultations.router)
+app.include_router(chat.router)
 app.include_router(reviews.router)
 app.include_router(transactions.router)
 app.include_router(wallet_transactions.router)
